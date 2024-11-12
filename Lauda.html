@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Fetcher and Music Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #searchForm {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #searchQuery {
+            padding: 12px;
+            font-size: 18px;
+            width: 60%;
+            max-width: 400px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #searchForm button {
+            padding: 12px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #searchForm button:hover {
+            background-color: #555;
+        }
+
+        #videoResults {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .video-item {
+            width: 250px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .video-item img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .video-item h3 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .video-item a {
+            text-decoration: none;
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        .video-item a:hover {
+            color: #004d99;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>YouTube Video Fetcher and Music Downloader</h1>
+</header>
+
+<!-- Search Bar Form -->
+<div id="searchForm">
+    <input type="text" id="searchQuery" placeholder="Search for videos..." required>
+    <button type="submit" id="searchButton">Search</button>
+</div>
+
+<!-- Video Results Section -->
+<div id="videoResults"></div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 Music Downloader & Video Fetcher</p>
+</footer>
+
+<script>
+    // Event listener for the search button
+    document.getElementById('searchButton').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        let searchQuery = document.getElementById('searchQuery').value;
+        if (searchQuery) {
+            fetchVideos(searchQuery);
+        }
+    });
+
+    // Function to fetch videos from YouTube
+    function fetchVideos(query) {
+        const apiKey = 'AIzaSyD_GdN9HZUBz18I8Wk_XKb_OUJScW1jkqw';
+        const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${apiKey}`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                displayVideos(data.items);
+            })
+            .catch(error => console.error('Error fetching YouTube data:', error));
+    }
+
+    // Function to display videos
+    function displayVideos(videos) {
+        const videoResultsDiv = document.getElementById('videoResults');
+        videoResultsDiv.innerHTML = ''; // Clear previous results
+
+        videos.forEach(video => {
+            const videoElement = document.createElement('div');
+            videoElement.classList.add('video-item');
+
+            const videoThumbnail = document.createElement('img');
+            videoThumbnail.src = video.snippet.thumbnails.medium.url;
+            videoThumbnail.alt = video.snippet.title;
+
+            const videoTitle = document.createElement('h3');
+            videoTitle.textContent = video.snippet.title;
+
+            const videoLink = document.createElement('a');
+            videoLink.href = `https://www.youtube.com/watch?v=${video.id.videoId}`;
+            videoLink.target = '_blank';
+            videoLink.textContent = 'Watch Video';
+
+            videoElement.appendChild(videoThumbnail);
+            videoElement.appendChild(videoTitle);
+            videoElement.appendChild(videoLink);
+
+            videoResultsDiv.appendChild(videoElement);
+        });
+    }
+</script>
+
+</body>
+</html>
